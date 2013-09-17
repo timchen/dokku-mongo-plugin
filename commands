@@ -38,7 +38,7 @@ case "$1" in
     IMAGE=$(docker commit $ID)
     docker tag $IMAGE $MONGO_IMAGE
     # Launch container
-    ID=$(docker run -p 6379 -d $MONGO_IMAGE /bin/start_mongo.sh)
+    ID=$(docker run -p 27017 -d $MONGO_IMAGE /bin/start_mongo.sh)
     sleep 4
     # Rename persistent volume
     if [[ ! -d "/var/lib/docker/volumes/mongo-$APP" ]]; then

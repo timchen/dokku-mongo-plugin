@@ -95,8 +95,8 @@ case "$1" in
         MONGO_IMAGE="mongo/$3"
         ID=$(docker ps -a | grep "$MONGO_IMAGE":latest |  awk '{print $1}')
         IP=$(docker inspect $ID | grep IPAddress | awk '{ print $2 }' | tr -d ',"')
-        # Write REDIS_IP to app's ENV file
-        URL="export REDIS_IP=$IP"
+        # Write MONGO_IP to app's ENV file
+        URL="export MONGO_IP=$IP"
         cat "/home/git/$APP/ENV" | grep "$URL" || echo "export $URL" >> "/home/git/$APP/ENV"
         echo
         echo "-----> $APP linked to $MONGO_IMAGE container"

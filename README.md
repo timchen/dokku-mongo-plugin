@@ -1,4 +1,4 @@
-Redis plugin for Dokku
+Mongo plugin for Dokku
 ----------------------
 
 Project: https://github.com/progrium/dokku
@@ -7,7 +7,7 @@ Installation
 ------------
 ```
 cd /var/lib/dokku/plugins
-git clone https://github.com/luxifer/dokku-redis-plugin redis
+git clone https://github.com/luxifer/dokku-mongo-plugin mongo
 dokku plugins-install
 ```
 
@@ -16,11 +16,11 @@ Commands
 --------
 ```
 $ dokku help
-     redis:create <app>     Create a Redis container
-     redis:delete <app>     Delete specified Redis container
-     redis:info <app>       Display container informations
-     redis:link <app> <rd>  Link an app to a Redis container
-     redis:logs <app>       Display last logs from Redis contain
+     mongo:create <app>     Create a Mongo container
+     mongo:delete <app>     Delete specified Mongo container
+     mongo:info <app>       Display container informations
+     mongo:link <app> <rd>  Link an app to a Mongo container
+     mongo:logs <app>       Display last logs from Mongo contain
 ```
 
 Simple usage
@@ -28,10 +28,10 @@ Simple usage
 
 Create a new Container:
 ```
-$ dokku redis:create foo            # Server side
-$ ssh dokku@server redis:create foo # Client side
+$ dokku mongo:create foo            # Server side
+$ ssh dokku@server mongo:create foo # Client side
 
------> Redis container created: redis/foo
+-----> Mongo container created: mongo/foo
 
        Host: 172.16.0.104
        Public port: 49187
@@ -54,8 +54,8 @@ remote: -----> Using Ruby version: ruby-2.0.0
 
 remote: -----> Deploying foo ...
 remote: 
-remote: -----> App foo linked to redis/foo container
-remote:        REDIS_IP=172.16.0.104
+remote: -----> App foo linked to mongo/foo container
+remote:        MONGO_IP=172.16.0.104
 remote: 
 remote: -----> Deploy complete!
 remote: -----> Cleaning up ...
@@ -70,20 +70,20 @@ Advanced usage
 
 Deleting containers:
 ```
-dokku redis:delete foo
+dokku mongo:delete foo
 ```
 
 Linking an app to a specific container:
 ```
-dokku redis:link foo bar
+dokku mongo:link foo bar
 ```
 
-Redis logs (per container):
+Mongo logs (per container):
 ```
-dokku redis:logs foo
+dokku mongo:logs foo
 ```
 
-Redis informations:
+Mongo informations:
 ```
-dokku redis:info foo
+dokku mongo:info foo
 ```

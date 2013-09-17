@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Build docker image
-docker build -q=true -t luxifer/redis github.com/calvdee/dokku-mongo-dockerfiles
+docker build -q=true -t cdl/redis github.com/calvdee/dokku-mongo-dockerfiles

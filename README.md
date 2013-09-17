@@ -7,7 +7,7 @@ Installation
 ------------
 ```
 cd /var/lib/dokku/plugins
-git clone https://github.com/luxifer/dokku-mongo-plugin mongo
+git clone https://github.com/calvdee/dokku-mongo-plugin mongo
 dokku plugins-install
 ```
 

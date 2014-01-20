@@ -48,7 +48,7 @@ case "$1" in
     IMAGE=$(docker commit $ID)
     docker tag $IMAGE $MONGO_IMAGE
     # Launch container
-    ID=$(docker run -p 27017 -d $MONGO_IMAGE -v $VOLUME\
+    ID=$(docker run -v $VOLUME -p 27017 -d $MONGO_IMAGE \
       /usr/bin/mongod)
     sleep 4
     # Link to a potential existing app
@@ -105,7 +105,7 @@ case "$1" in
         MONGODB_HOST="${IP}" \
         MONGODB_PORT="27017" \
         MONGODB_USERNAME="$mongodb_username" \
-        MONGODB_PASSWORD="$mongodb_password" \
+        MONGODB_PASSWORD="$mongodb_password"
         #MONGO_URL="mongodb://${mongodb_username}:${mongodb_password}@${mongodb_private_ip}:${mongodb_port}/${mongodb_database}"
         echo
         echo "-----> $APP linked to $MONGO_IMAGE container"

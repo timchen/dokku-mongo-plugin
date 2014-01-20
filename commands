@@ -27,6 +27,16 @@ case "$1" in
         echo "Mongo image not found... Did you run 'dokku plugins-install' ?"
         exit 1
     fi
+
+    # Check if an existing DB volume exists
+    HOST_DIR="$DOKKU_ROOT/.mongo/volume-$APP"
+    if [[ -d $HOST_DIR ]]; then
+        echo
+        echo "-----> Reusing mongo/$APP database"
+    else
+        mkdir -p $HOST_DIR
+    fi
+    VOLUME="$HOST_DIR:/data/db"
     # Stop existing container with the same persistent Mongo
     ID=$(docker ps | grep "$MONGO_IMAGE":latest |  awk '{print $1}')
     if [[ ! -z "$ID" ]]; then
@@ -38,15 +48,9 @@ case "$1" in
     IMAGE=$(docker commit $ID)
     docker tag $IMAGE $MONGO_IMAGE
     # Launch container
-    ID=$(docker run -p 27017 -d $MONGO_IMAGE \
+    ID=$(docker run -p 27017 -d $MONGO_IMAGE -v $VOLUME\
       /usr/bin/mongod)
     sleep 4
-    # Rename persistent volume
-    if [[ ! -d "/var/lib/docker/volumes/mongo-$APP" ]]; then
-        VOLUME_PATH=$(docker inspect $ID | grep "/var/lib/docker/volumes/" | awk '{print $2}' | sed -e"s/\/layer//" | sed -e's/"//g')
-        mv $VOLUME_PATH "/var/lib/docker/volumes/mongo-$APP"
-        sleep 1
-    fi
     # Link to a potential existing app
     dokku mongo:link $APP $APP
     echo
@@ -68,8 +72,9 @@ case "$1" in
         docker rmi $IMAGE
     fi
     # Remove persistent volume
-    if [[ -d "/var/lib/docker/volumes/mongo-$APP" ]]; then
-        rm -rf "/var/lib/docker/volumes/mongo-$APP"
+    HOST_DIR="$DOKKU_ROOT/.mongo/volume-$APP"
+    if [[ -d $HOST_DIR ]]; then
+        rm -rf $HOST_DIR
     fi
     echo
     echo "-----> Mongo container deleted: $MONGO_IMAGE"
@@ -79,7 +84,7 @@ case "$1" in
     MONGO_IMAGE=mongo/$APP
     ID=$(docker ps -a | grep "$MONGO_IMAGE":latest |  awk '{print $1}')
     IP=$(docker inspect $ID | grep IPAddress | awk '{ print $2 }' | tr -d ',"')
-    PORT=$(docker port $ID 3306)
+    PORT=$(docker port $ID 27017)
     echo
     echo "       Host: $IP"
     echo "       Public port: $PORT"
@@ -96,9 +101,12 @@ case "$1" in
         MONGO_IMAGE="mongo/$3"
         ID=$(docker ps -a | grep "$MONGO_IMAGE":latest |  awk '{print $1}')
         IP=$(docker inspect $ID | grep IPAddress | awk '{ print $2 }' | tr -d ',"')
-        # Write MONGO_IP to app's ENV file
-        URL="export MONGO_IP=$IP"
-        cat "/home/git/$APP/ENV" | grep "$URL" || echo "export $URL" >> "/home/git/$APP/ENV"
+        dokku config:set "$APP" MONGO_DATABASE="${APP}"\ 
+        MONGODB_HOST="${IP}" \
+        MONGODB_PORT="27017" \
+        MONGODB_USERNAME="$mongodb_username" \
+        MONGODB_PASSWORD="$mongodb_password" \
+        #MONGO_URL="mongodb://${mongodb_username}:${mongodb_password}@${mongodb_private_ip}:${mongodb_port}/${mongodb_database}"
         echo
         echo "-----> $APP linked to $MONGO_IMAGE container"
     fi

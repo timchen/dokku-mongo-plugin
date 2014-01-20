@@ -22,7 +22,7 @@ case "$1" in
   mongo:create)
     MONGO_IMAGE=mongo/$APP
     # Check if Mongo container is installed
-    IMAGE=$(docker images | grep "cdlm/mongo " |  awk '{print $3}')
+    IMAGE=$(docker images | grep "timchen/mongo " |  awk '{print $3}')
     if [[ -z $IMAGE ]]; then
         echo "Mongo image not found... Did you run 'dokku plugins-install' ?"
         exit 1
@@ -33,12 +33,13 @@ case "$1" in
         docker stop $ID > /dev/null
     fi
     # Fork Mongo image
-    ID=$(docker run -d cdlm/mongo exit 0)
+    ID=$(docker run -d timchen/mongo exit 0)
     docker wait $ID > /dev/null
     IMAGE=$(docker commit $ID)
     docker tag $IMAGE $MONGO_IMAGE
     # Launch container
-    ID=$(docker run -p 27017 -d $MONGO_IMAGE /bin/start_mongo.sh)
+    ID=$(docker run -p 27017 -d $MONGO_IMAGE \
+      /usr/bin/mongod)
     sleep 4
     # Rename persistent volume
     if [[ ! -d "/var/lib/docker/volumes/mongo-$APP" ]]; then

@@ -1,4 +1,4 @@
-Mongo plugin for Dokku
+Mongo plugin for Dokku with Cheese
 ----------------------
 
 Project: https://github.com/progrium/dokku

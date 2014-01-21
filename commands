@@ -102,12 +102,22 @@ case "$1" in
         ID=$(docker ps -a | grep "$MONGO_IMAGE":latest |  awk '{print $1}')
         if [[ ! -z "$ID" ]]; then
             IP=$(docker inspect $ID | grep IPAddress | awk '{ print $2 }' | tr -d ',"')
-            dokku config:set "$APP" MONGO_DATABASE="${APP}" \
-            MONGODB_HOST="${IP}" \
-            MONGODB_PORT="27017" \
-            MONGODB_USERNAME="$mongodb_username" \
-            MONGODB_PASSWORD="$mongodb_password"
-            #MONGO_URL="mongodb://${mongodb_username}:${mongodb_password}@${mongodb_private_ip}:${mongodb_port}/${mongodb_database}"
+            
+            if [[ ! -f "$DOKKU_ROOT/$APP/ENV" ]]; then
+                touch "$DOKKU_ROOT/$APP/ENV"
+            fi
+            
+            # Only set once! This will cause an infinite loop
+            # unless you make sure it hasn't already been run!
+            if [[ -z dokku config:get "$APP" MONGO_DATABASE ]]; then
+                dokku config:set "$APP" MONGO_DATABASE="${APP}" \
+                MONGODB_HOST="${IP}" \
+                MONGODB_PORT="27017" \
+                MONGODB_USERNAME="$mongodb_username" \
+                MONGODB_PASSWORD="$mongodb_password"
+                #MONGO_URL="mongodb://${mongodb_username}:${mongodb_password}@${mongodb_private_ip}:${mongodb_port}/${mongodb_database}"
+            end
+            
             echo
             echo "-----> $APP linked to $MONGO_IMAGE container"
         fi

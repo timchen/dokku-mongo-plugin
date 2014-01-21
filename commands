@@ -116,7 +116,7 @@ case "$1" in
                 MONGODB_USERNAME="$mongodb_username" \
                 MONGODB_PASSWORD="$mongodb_password"
                 #MONGO_URL="mongodb://${mongodb_username}:${mongodb_password}@${mongodb_private_ip}:${mongodb_port}/${mongodb_database}"
-            end
+            fi
             
             echo
             echo "-----> $APP linked to $MONGO_IMAGE container"

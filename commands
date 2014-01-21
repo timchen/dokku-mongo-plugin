@@ -100,15 +100,17 @@ case "$1" in
         fi
         MONGO_IMAGE="mongo/$3"
         ID=$(docker ps -a | grep "$MONGO_IMAGE":latest |  awk '{print $1}')
-        IP=$(docker inspect $ID | grep IPAddress | awk '{ print $2 }' | tr -d ',"')
-        dokku config:set "$APP" MONGO_DATABASE="${APP}" \
-        MONGODB_HOST="${IP}" \
-        MONGODB_PORT="27017" \
-        MONGODB_USERNAME="$mongodb_username" \
-        MONGODB_PASSWORD="$mongodb_password"
-        #MONGO_URL="mongodb://${mongodb_username}:${mongodb_password}@${mongodb_private_ip}:${mongodb_port}/${mongodb_database}"
-        echo
-        echo "-----> $APP linked to $MONGO_IMAGE container"
+        if [[ ! -z "$ID" ]]; then
+            IP=$(docker inspect $ID | grep IPAddress | awk '{ print $2 }' | tr -d ',"')
+            dokku config:set "$APP" MONGO_DATABASE="${APP}" \
+            MONGODB_HOST="${IP}" \
+            MONGODB_PORT="27017" \
+            MONGODB_USERNAME="$mongodb_username" \
+            MONGODB_PASSWORD="$mongodb_password"
+            #MONGO_URL="mongodb://${mongodb_username}:${mongodb_password}@${mongodb_private_ip}:${mongodb_port}/${mongodb_database}"
+            echo
+            echo "-----> $APP linked to $MONGO_IMAGE container"
+        fi
     fi
     ;;
 

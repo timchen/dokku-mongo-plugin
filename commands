@@ -9,7 +9,7 @@ if [[ $1 == mongo:* ]]; then
     else
         APP="$2"
         # Check if app exists with the same name
-        if [[ -d "/home/git/$APP" ]]; then
+        if [[ -d "$DOKKU_ROOT/$APP" ]]; then
             APP_EXISTS=true
         else
             APP_EXISTS=false
@@ -101,7 +101,7 @@ case "$1" in
         MONGO_IMAGE="mongo/$3"
         ID=$(docker ps -a | grep "$MONGO_IMAGE":latest |  awk '{print $1}')
         IP=$(docker inspect $ID | grep IPAddress | awk '{ print $2 }' | tr -d ',"')
-        dokku config:set "$APP" MONGO_DATABASE="${APP}"\ 
+        dokku config:set "$APP" MONGO_DATABASE="${APP}" \
         MONGODB_HOST="${IP}" \
         MONGODB_PORT="27017" \
         MONGODB_USERNAME="$mongodb_username" \
@@ -129,4 +129,3 @@ EOF
     ;;
 
 esac
-cat

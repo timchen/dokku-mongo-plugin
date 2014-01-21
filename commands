@@ -109,7 +109,7 @@ case "$1" in
             
             # Only set once! This will cause an infinite loop
             # unless you make sure it hasn't already been run!
-            if [[ -z dokku config:get "$APP" MONGO_DATABASE ]]; then
+            if [[ -z $(dokku config:get "$APP" MONGO_DATABASE) ]]; then
                 dokku config:set "$APP" MONGO_DATABASE="${APP}" \
                 MONGODB_HOST="${IP}" \
                 MONGODB_PORT="27017" \
